@@ -1,0 +1,55 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hashedPassword String @default("")
+}
+
+model Owner {
+  id            Int    @id @default(autoincrement())
+  fullName      String
+  licenseNumber String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Vehicle Vehicle[]
+}
+
+model Vehicle {
+  id           Int    @id @default(autoincrement())
+  plateNumber  String
+  makeAndModel String
+
+  finesDue Decimal @db.Decimal(19, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner   Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ownerId Int
+  Payment Payment[]
+}
+
+model Payment {
+  id     Int     @id @default(autoincrement())
+  amount Decimal @db.Decimal(19, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vehicleId Int
+}
