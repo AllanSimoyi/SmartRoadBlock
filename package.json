@@ -42,6 +42,7 @@
     "@remix-run/server-runtime": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.32.0",
+    "dayjs": "^1.11.6",
     "framer-motion": "^6.5.1",
     "isbot": "^3.5.3",
     "react": "^18.2.0",
