@@ -5,7 +5,7 @@ interface Props extends ButtonProps {}
 
 export function PrimaryButton(props: Props) {
   return (
-    <Button colorScheme="blue" {...props}>
+    <Button colorScheme="green" {...props}>
       {props.children}
     </Button>
   )

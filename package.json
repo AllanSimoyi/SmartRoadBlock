@@ -30,6 +30,8 @@
   ],
   "dependencies": {
     "@chakra-ui/react": "^2.3.6",
+    "@cloudinary/react": "^1.5.0",
+    "@cloudinary/url-gen": "^1.8.6",
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.4",
@@ -39,10 +41,12 @@
     "@remix-run/serve": "^1.7.2",
     "@remix-run/server-runtime": "^1.7.2",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.32.0",
     "framer-motion": "^6.5.1",
     "isbot": "^3.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tabler-icons-react": "^1.55.0",
     "tiny-invariant": "^1.2.0",
     "zod": "^3.19.1"
   },

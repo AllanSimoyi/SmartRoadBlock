@@ -1,7 +1,7 @@
 import { Text, VStack } from '@chakra-ui/react';
 import type { ThrownResponse } from "@remix-run/react";
 import { Link } from "@remix-run/react";
-import { BoundaryError } from "~/core/components/BoundaryError";
+import { BoundaryError } from "~/components/BoundaryError";
 import { PrimaryButton } from './PrimaryButton';
 
 interface Props {

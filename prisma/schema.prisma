@@ -21,26 +21,28 @@ model Owner {
   id            Int    @id @default(autoincrement())
   fullName      String
   licenseNumber String
+  image         String @default("")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Vehicle Vehicle[]
+  vehicle Vehicle[]
 }
 
 model Vehicle {
   id           Int    @id @default(autoincrement())
   plateNumber  String
   makeAndModel String
+  image        String @default("")
 
   finesDue Decimal @db.Decimal(19, 2)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner   Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ownerId Int
-  Payment Payment[]
+  owner    Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ownerId  Int
+  payments Payment[]
 }
 
 model Payment {

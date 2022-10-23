@@ -9,9 +9,11 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
+  useLoaderData
 } from '@remix-run/react'
 import React, { useContext, useEffect } from 'react'
+import { CloudinaryContextProvider } from './components/CloudinaryContextProvider';
 import { ClientStyleContext, ServerStyleContext } from './context'
 import { getUser } from "./session.server"
 import customStylesUrl from "./styles/custom.css"
@@ -85,16 +87,21 @@ const Document = withEmotionCache(
 );
 
 export async function loader ({ request }: LoaderArgs) {
-  return json({
-    user: await getUser(request),
-  });
+  const user = await getUser(request);
+  const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "";
+  const UPLOAD_RESET = process.env.CLOUDINARY_UPLOAD_RESET || "";
+
+  return json({ user, CLOUD_NAME, UPLOAD_RESET });
 }
 
 export default function App () {
+  const { CLOUD_NAME, UPLOAD_RESET } = useLoaderData<typeof loader>();
   return (
     <Document>
       <ChakraProvider theme={theme}>
-        <Outlet />
+        <CloudinaryContextProvider CLOUDINARY_CLOUD_NAME={CLOUD_NAME} CLOUDINARY_UPLOAD_RESET={UPLOAD_RESET}>
+          <Outlet />
+        </CloudinaryContextProvider>
       </ChakraProvider>
     </Document>
   )

@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `Owner` ADD COLUMN `image` VARCHAR(191) NOT NULL DEFAULT '';
+
+-- AlterTable
+ALTER TABLE `Vehicle` ADD COLUMN `image` VARCHAR(191) NOT NULL DEFAULT '';

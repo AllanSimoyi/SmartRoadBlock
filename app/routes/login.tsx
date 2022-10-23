@@ -1,7 +1,7 @@
-import { Center, VStack } from "@chakra-ui/react";
+import { Center, Heading, VStack } from "@chakra-ui/react";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useFetcher, useLoaderData, useSearchParams } from "@remix-run/react";
+import { Link, useCatch, useFetcher, useLoaderData, useNavigate, useSearchParams } from "@remix-run/react";
 import { z } from "zod";
 import { ActionContextProvider } from "~/components/ActionContextProvider";
 import { Card } from "~/components/Card";
@@ -19,6 +19,9 @@ import { verifyLogin } from "~/lib/user.server";
 import { createUserSession } from "~/session.server";
 import { safeRedirect } from "~/utils";
 
+import { useCallback } from "react";
+import { CustomCatchBoundary } from "~/components/CustomCatchBoundary";
+import { CustomErrorBoundary } from "~/components/CustomErrorBoundary";
 import { getUserId } from "~/session.server";
 
 export const meta: MetaFunction = () => {
@@ -92,7 +95,9 @@ export default function LoginPage () {
         <VStack justify={"center"} align="center" p={4}>
           <ScrollAnimation variants={getSlideUpScrollVariants({ delay: 0.1 })}>
             <Link to="/">
-              <CardHeading>SMART ROAD BLOCK</CardHeading>
+              <Heading color="green.600" size="lg" fontWeight="bold">
+                SMART ROAD BLOCK
+              </Heading>
             </Link>
           </ScrollAnimation>
         </VStack>
@@ -144,7 +149,7 @@ export default function LoginPage () {
               </ActionContextProvider>
             </fetcher.Form>
             <CardSection noBottomBorder>
-              <Link to="/create-account">
+              <Link to="/join">
                 <OutlinedButton w="100%" isDisabled={isLoggingIn}>
                   {"Don't Have An Account"}
                 </OutlinedButton>
@@ -155,4 +160,22 @@ export default function LoginPage () {
       </VStack>
     </Center>
   );
+}
+
+export function CatchBoundary () {
+  const caught = useCatch();
+  const navigate = useNavigate();
+  const reload = useCallback(() => {
+    navigate('.', { replace: true })
+  }, [navigate]);
+  return <CustomCatchBoundary reload={reload} caught={caught} />
+}
+
+export function ErrorBoundary ({ error }: { error: Error }) {
+  console.error(error);
+  const navigate = useNavigate();
+  const reload = useCallback(() => {
+    navigate('.', { replace: true })
+  }, [navigate]);
+  return <CustomErrorBoundary reload={reload} error={error} />
 }

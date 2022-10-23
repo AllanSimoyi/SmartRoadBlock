@@ -1,5 +1,5 @@
 import { Text, VStack } from '@chakra-ui/react';
-import { BoundaryError } from "~/core/components/BoundaryError";
+import { BoundaryError } from "~/components/BoundaryError";
 import { PrimaryButton } from './PrimaryButton';
 
 interface Props {
