@@ -1,7 +1,8 @@
-import { Button, ButtonGroup, Heading, Spacer, Stack, VStack } from "@chakra-ui/react";
-import { Link } from "@remix-run/react";
+import { Button, ButtonGroup, Heading, HStack, Spacer, Stack, Text, VStack } from "@chakra-ui/react";
+import { Form, Link } from "@remix-run/react";
 import type { CurrentUser } from "~/lib/auth.validations";
 import { CenteredView } from "./CenteredView";
+import { OutlinedButton } from "./OutlinedButton";
 
 interface NavItem {
   text: string;
@@ -42,6 +43,18 @@ export function Toolbar (props: Props) {
                 </VStack>
               ))}
             </ButtonGroup>
+          )}
+          {currentUser && (
+            <HStack p={0} justify="flex-end" align="center">
+              <Text color="white" fontSize="md" px="4" noOfLines={1}>
+                {currentUser.username}
+              </Text>
+              <Form action="/logout" method="post">
+                <OutlinedButton size="sm" type="submit" w="100%" colorScheme="whiteAlpha">
+                  Log Out
+                </OutlinedButton>
+              </Form>
+            </HStack>
           )}
         </Stack>
       </CenteredView>
