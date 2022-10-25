@@ -169,10 +169,12 @@ export default function VehiclePage () {
           <CardSection>
             <Stack direction={{ base: "column", lg: "row" }} align="flex-start" spacing={4}>
               {Boolean(vehicle.image) && (
-                <AdvancedImage
-                  cldImg={cloudinaryImages(CLOUD_NAME).getFullImage(vehicle.image)}
-                  plugins={[placeholder({ mode: 'blur' })]}
-                />
+                <VStack maxW={{ base: "100%", lg: "50%" }} align="stretch">
+                  <AdvancedImage
+                    cldImg={cloudinaryImages(CLOUD_NAME).getFullImage(vehicle.image)}
+                    plugins={[placeholder({ mode: 'blur' })]}
+                  />
+                </VStack>
               )}
               {!vehicle.image && (
                 <Img boxSize='400px' src={placeholderImage} alt={vehicle.makeAndModel} />
@@ -197,10 +199,12 @@ export default function VehiclePage () {
           <CardSection>
             <Stack direction={{ base: "column", lg: "row" }} align="flex-start" spacing={4}>
               {Boolean(vehicle.owner.image) && (
-                <AdvancedImage
-                  cldImg={cloudinaryImages(CLOUD_NAME).getUploadThumbnail(vehicle.owner.image)}
-                  plugins={[placeholder({ mode: 'blur' })]}
-                />
+                <VStack maxW={{ base: "100%", lg: "50%" }} align="stretch">
+                  <AdvancedImage
+                    cldImg={cloudinaryImages(CLOUD_NAME).getUploadThumbnail(vehicle.owner.image)}
+                    plugins={[placeholder({ mode: 'blur' })]}
+                  />
+                </VStack>
               )}
               {!vehicle.owner.image && (
                 <Avatar name={vehicle.owner.fullName} src={vehicle.owner.image} />
