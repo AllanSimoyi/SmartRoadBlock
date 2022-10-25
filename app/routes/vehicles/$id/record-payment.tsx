@@ -40,7 +40,7 @@ export async function loader ({ request, params }: LoaderArgs) {
 
   const vehicle = await prisma.vehicle.findUnique({
     where: { id },
-    include: { owner: true },
+    include: { driver: true },
   });
   if (!vehicle) {
     throw new Response("Vehicle record not found", { status: 404 });
@@ -120,7 +120,7 @@ export default function RecordPayment () {
                     </BreadcrumbItem>
                     <BreadcrumbItem color="green.600">
                       <BreadcrumbLink as={Link} to={`/vehicles/${ vehicle.id }`}>
-                        Owned By {vehicle.owner.fullName}
+                        Owned By {vehicle.driver.fullName}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem isCurrentPage>

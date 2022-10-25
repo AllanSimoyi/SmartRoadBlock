@@ -17,11 +17,20 @@ model User {
   hashedPassword String @default("")
 }
 
-model Owner {
-  id            Int    @id @default(autoincrement())
+model Driver {
+  id            Int      @id @default(autoincrement())
   fullName      String
   licenseNumber String
-  image         String @default("")
+  nationalID    String   @default("")
+  dob           DateTime @default(now())
+  phone         String   @default("")
+
+  defensive String @default("")
+  medical   String @default("")
+  class     String @default("")
+  year      String @default("")
+
+  image String @default("")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -33,6 +42,10 @@ model Vehicle {
   id           Int    @id @default(autoincrement())
   plateNumber  String
   makeAndModel String
+  year         String @default("")
+  colour       String @default("")
+  weight       Int    @default(0)
+  netWeight    Int    @default(0)
   image        String @default("")
 
   finesDue Decimal @db.Decimal(19, 2)
@@ -40,8 +53,8 @@ model Vehicle {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner    Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ownerId  Int
+  driver   Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  driverId Int
   payments Payment[]
 }
 

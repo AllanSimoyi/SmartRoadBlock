@@ -1,5 +1,5 @@
 import { Avatar, Button, Flex, HStack, Img, Text, VStack } from "@chakra-ui/react";
-import type { Owner, Vehicle } from "@prisma/client";
+import type { Driver, Vehicle } from "@prisma/client";
 import { Link } from "@remix-run/react";
 import { Card } from "~/components/Card";
 import { CardSection } from "~/components/CardSection";
@@ -13,7 +13,7 @@ interface CustomVehicle extends Omit<Vehicle, "finesDue"> {
 }
 
 interface Props {
-  vehicle: (CustomVehicle & { owner: Owner })
+  vehicle: (CustomVehicle & { driver: Driver })
 }
 
 export function VehicleListItem (props: Props) {
@@ -24,21 +24,21 @@ export function VehicleListItem (props: Props) {
       <CardSection noBottomBorder>
         <HStack>
           <Flex flexDirection="column" justify="center" align="center">
-            {Boolean(vehicle.owner.image) && (
+            {Boolean(vehicle.driver.image) && (
               <AdvancedImage
-                cldImg={cloudinaryImages(CLOUDINARY_CLOUD_NAME).getUploadThumbnail(vehicle.owner.image)}
+                cldImg={cloudinaryImages(CLOUDINARY_CLOUD_NAME).getUploadThumbnail(vehicle.driver.image)}
                 plugins={[placeholder({ mode: 'blur' })]}
               />
             )}
-            {!vehicle.owner.image && (
-              <Avatar name={vehicle.owner.fullName} src={vehicle.owner.image} />
+            {!vehicle.driver.image && (
+              <Avatar name={vehicle.driver.fullName} src={vehicle.driver.image} />
             )}
           </Flex>
           <VStack align="flex-start" gap="1">
             <Text fontSize="md">
-              <b>{vehicle.owner.fullName}</b>
+              <b>{vehicle.driver.fullName}</b>
               <br />
-              {vehicle.owner.licenseNumber}
+              {vehicle.driver.licenseNumber}
             </Text>
           </VStack>
         </HStack>

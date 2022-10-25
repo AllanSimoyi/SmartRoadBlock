@@ -37,7 +37,7 @@ export const meta: MetaFunction = () => {
 function fetchVehicle (id: number) {
   return prisma.vehicle.findUnique({
     where: { id },
-    include: { owner: true, payments: true },
+    include: { driver: true, payments: true },
   });
 }
 
@@ -187,6 +187,18 @@ export default function VehiclePage () {
                   {`Plate Number: `}<b>{vehicle.plateNumber}</b>
                 </Text>
                 <Text fontSize="md">
+                  {`Year: `}<b>{vehicle.year}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Colour: `}<b>{vehicle.colour}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Weight: `}<b>{vehicle.weight}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Net Weight: `}<b>{vehicle.weight}</b>
+                </Text>
+                <Text fontSize="md">
                   {`Total Fines Due: `}<b>ZWL {Number(vehicle.finesDue || 0).toLocaleString()}</b>
                 </Text>
                 <Text fontSize="md">
@@ -195,26 +207,47 @@ export default function VehiclePage () {
               </VStack>
             </Stack>
           </CardSection>
-          <CardHeading align="flex-start" noBottomBorder>Owner Details</CardHeading>
+          <CardHeading align="flex-start" noBottomBorder>Driver Details</CardHeading>
           <CardSection>
             <Stack direction={{ base: "column", lg: "row" }} align="flex-start" spacing={4}>
-              {Boolean(vehicle.owner.image) && (
+              {Boolean(vehicle.driver.image) && (
                 <VStack maxW={{ base: "100%", lg: "50%" }} align="stretch">
                   <AdvancedImage
-                    cldImg={cloudinaryImages(CLOUD_NAME).getUploadThumbnail(vehicle.owner.image)}
+                    cldImg={cloudinaryImages(CLOUD_NAME).getFullImage(vehicle.driver.image)}
                     plugins={[placeholder({ mode: 'blur' })]}
                   />
                 </VStack>
               )}
-              {!vehicle.owner.image && (
-                <Avatar name={vehicle.owner.fullName} src={vehicle.owner.image} />
+              {!vehicle.driver.image && (
+                <Avatar name={vehicle.driver.fullName} src={vehicle.driver.image} />
               )}
-              <VStack align="flex-start" spacing={2}>
-                <Text fontSize="md" fontWeight="bold">
-                  {vehicle.owner.fullName}
+              <VStack align="flex-start" spacing={6}>
+                <Text fontSize="md">
+                  {`Name: `}<b>{vehicle.driver.fullName}</b>
                 </Text>
                 <Text fontSize="md">
-                  {vehicle.owner.licenseNumber}
+                  {`License #: `}<b>{vehicle.driver.licenseNumber}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`National ID: `}<b>{vehicle.driver.nationalID}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Date of Birth: `}<b>{dayjs(vehicle.driver.dob).format('DD-MMM-YYYY')}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Phone #: `}<b>{vehicle.driver.phone}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Defensive: `}<b>{vehicle.driver.defensive}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Medical: `}<b>{vehicle.driver.medical}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Class: `}<b>{vehicle.driver.class}</b>
+                </Text>
+                <Text fontSize="md">
+                  {`Year: `}<b>{vehicle.driver.year}</b>
                 </Text>
               </VStack>
             </Stack>
@@ -229,7 +262,7 @@ export default function VehiclePage () {
                       <Text fontSize="md">
                         ZWL {Number(payment.amount).toLocaleString()} -
                       </Text>
-                      <Text fontSize="xs" color="gray.600">
+                      <Text fontSize="md" color="gray.600">
                         {dayjs(payment.createdAt).format('DD-MMM-YYYY')}
                       </Text>
                     </HStack>

@@ -42,7 +42,7 @@ export async function loader ({ request, params }: LoaderArgs) {
 
   const vehicle = await prisma.vehicle.findUnique({
     where: { id },
-    include: { owner: true },
+    include: { driver: true },
   });
   if (!vehicle) {
     throw new Response("Vehicle record not found", { status: 404 });
@@ -59,7 +59,7 @@ const Schema = z.object({
 
   fullName: z.string().min(1).max(255),
   licenseNumber: z.string().min(1).max(255),
-  ownerImage: z.string().min(0).max(800),
+  driverImage: z.string().min(0).max(800),
 })
 
 type Fields = z.infer<typeof Schema>;
@@ -88,11 +88,11 @@ export async function action ({ request, params }: ActionArgs) {
     return badRequest({ fields, fieldErrors, formError: formErrors.join(", ") });
   }
   const { plateNumber, makeAndModel, vehicleImage, finesDue } = result.data;
-  const { fullName, licenseNumber, ownerImage } = result.data;
+  const { fullName, licenseNumber, driverImage } = result.data;
 
   const vehicle = await prisma.vehicle.findUnique({
     where: { id: id },
-    select: { ownerId: true },
+    select: { driverId: true },
   });
   if (!vehicle) {
     throw new Response("Vehicle record not found", { status: 404 });
@@ -103,9 +103,9 @@ export async function action ({ request, params }: ActionArgs) {
       where: { id },
       data: { plateNumber, makeAndModel, image: vehicleImage, finesDue },
     }),
-    prisma.owner.update({
-      where: { id: vehicle.ownerId },
-      data: { fullName, licenseNumber, image: ownerImage },
+    prisma.driver.update({
+      where: { id: vehicle.driverId },
+      data: { fullName, licenseNumber, image: driverImage },
     })
   ]);
 
@@ -123,17 +123,17 @@ export default function EditVehicle () {
     vehicleImage: vehicle.image,
     finesDue: Number(vehicle.finesDue),
 
-    fullName: vehicle.owner.fullName,
-    licenseNumber: vehicle.owner.licenseNumber,
-    ownerImage: vehicle.owner.image,
+    fullName: vehicle.driver.fullName,
+    licenseNumber: vehicle.driver.licenseNumber,
+    driverImage: vehicle.driver.image,
   }
 
   const vehicleImage = useUploadCloudinaryImage({
     initialPublicId: vehicle.image,
   });
 
-  const ownerImage = useUploadCloudinaryImage({
-    initialPublicId: vehicle.owner.image,
+  const driverImage = useUploadCloudinaryImage({
+    initialPublicId: vehicle.driver.image,
   });
 
   return (
@@ -157,7 +157,7 @@ export default function EditVehicle () {
                     </BreadcrumbItem>
                     <BreadcrumbItem color="green.600">
                       <BreadcrumbLink as={Link} to={`/vehicles/${ vehicle.id }`}>
-                        Owned By {vehicle.owner.fullName}
+                        Owned By {vehicle.driver.fullName}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem isCurrentPage>
@@ -199,7 +199,7 @@ export default function EditVehicle () {
               <CardSection noBottomBorder py={6}>
                 <VStack align="stretch" pb={4}>
                   <Heading role="heading" size="md">
-                    Owner Details
+                    Driver Details
                   </Heading>
                 </VStack>
                 <TextField
@@ -212,8 +212,8 @@ export default function EditVehicle () {
                   label="License Number"
                   placeholder="License Number"
                 />
-                <input type="hidden" name="ownerImage" value={ownerImage.publicId} />
-                <UploadImage {...ownerImage} identifier={"owner's image"} />
+                <input type="hidden" name="driverImage" value={driverImage.publicId} />
+                <UploadImage {...driverImage} identifier={"driver's image"} />
               </CardSection>
               <CardSection noBottomBorder py={2}>
                 <PrimaryButton type="submit" isDisabled={isProcessing}>

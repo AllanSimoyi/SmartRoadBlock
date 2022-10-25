@@ -44,7 +44,7 @@ const Schema = z.object({
 
   fullName: z.string().min(1).max(255),
   licenseNumber: z.string().min(1).max(255),
-  ownerImage: z.string().min(0).max(800),
+  driverImage: z.string().min(0).max(800),
 })
 
 type Fields = z.infer<typeof Schema>;
@@ -67,18 +67,18 @@ export async function action ({ request, params }: ActionArgs) {
     return badRequest({ fields, fieldErrors, formError: formErrors.join(", ") });
   }
   const { plateNumber, makeAndModel, vehicleImage, finesDue } = result.data;
-  const { fullName, licenseNumber, ownerImage } = result.data;
+  const { fullName, licenseNumber, driverImage } = result.data;
 
-  const owner = await prisma.owner.create({
+  const driver = await prisma.driver.create({
     data: {
-      fullName, licenseNumber, image: ownerImage,
+      fullName, licenseNumber, image: driverImage,
     }
   });
 
   await prisma.vehicle.create({
     data: {
       plateNumber, makeAndModel, image: vehicleImage, finesDue,
-      ownerId: owner.id
+      driverId: driver.id
     }
   });
 
@@ -98,14 +98,14 @@ export default function AddVehicle () {
 
     fullName: "",
     licenseNumber: "",
-    ownerImage: "",
+    driverImage: "",
   }
 
   const vehicleImage = useUploadCloudinaryImage({
     initialPublicId: "",
   });
 
-  const ownerImage = useUploadCloudinaryImage({
+  const driverImage = useUploadCloudinaryImage({
     initialPublicId: "",
   });
 
@@ -167,7 +167,7 @@ export default function AddVehicle () {
               <CardSection noBottomBorder py={6}>
                 <VStack align="stretch" pb={4}>
                   <Heading role="heading" size="md">
-                    Owner Details
+                    Driver Details
                   </Heading>
                 </VStack>
                 <TextField
@@ -180,8 +180,8 @@ export default function AddVehicle () {
                   label="License Number"
                   placeholder="License Number"
                 />
-                <input type="hidden" name="ownerImage" value={ownerImage.publicId} />
-                <UploadImage {...ownerImage} identifier={"owner's image"} />
+                <input type="hidden" name="driverImage" value={driverImage.publicId} />
+                <UploadImage {...driverImage} identifier={"driver's image"} />
               </CardSection>
               <CardSection noBottomBorder py={2}>
                 <PrimaryButton type="submit" isDisabled={isProcessing}>

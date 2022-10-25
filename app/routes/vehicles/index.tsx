@@ -20,7 +20,7 @@ export const meta: MetaFunction = () => {
 export async function loader ({ request }: LoaderArgs) {
   await requireUser(request);
   const vehicles = await prisma.vehicle.findMany({
-    include: { owner: true },
+    include: { driver: true },
   });
   return json({ vehicles });
 }
@@ -44,10 +44,11 @@ export default function VehiclesPage () {
               finesDue: Number(vehicle.finesDue),
               createdAt: new Date(vehicle.createdAt),
               updatedAt: new Date(vehicle.updatedAt),
-              owner: {
-                ...vehicle.owner,
-                createdAt: new Date(vehicle.owner.createdAt),
-                updatedAt: new Date(vehicle.owner.updatedAt),
+              driver: {
+                ...vehicle.driver,
+                dob: new Date(vehicle.driver.dob),
+                createdAt: new Date(vehicle.driver.createdAt),
+                updatedAt: new Date(vehicle.driver.updatedAt),
               }
             }} />
           </ScrollAnimateUp>
