@@ -47,7 +47,7 @@ export function Toolbar (props: Props) {
           {currentUser && (
             <HStack p={0} justify="flex-end" align="center">
               <Text fontSize="md" px="4" noOfLines={1}>
-                {currentUser.username}
+                Username: {currentUser.username}
               </Text>
               <Form action="/logout" method="post">
                 <OutlinedButton size="sm" type="submit" w="100%" colorScheme="whiteAlpha">
