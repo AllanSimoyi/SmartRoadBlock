@@ -19,7 +19,8 @@ import type { inferSafeParseErrors } from "~/lib/core.validations";
 import { badRequest } from "~/lib/core.validations";
 import { getSlideUpScrollVariants } from "~/lib/scroll-variants";
 import { createUserSession, getUserId } from "~/session.server";
-import { createUser, getUserByEmail } from "~/lib/user.server";
+import { createUser, getUserByUsername } from "~/lib/user.server";
+import { PasswordSchema, UsernameSchema } from "~/lib/auth.validations";
 
 export const meta: MetaFunction = () => {
   return {
@@ -28,9 +29,9 @@ export const meta: MetaFunction = () => {
 };
 
 const Schema = z.object({
-  username: z.string().min(1).max(50),
-  password: z.string().min(4).max(50),
-  passwordConfirmation: z.string().min(4).max(50),
+  username: UsernameSchema,
+  password: PasswordSchema,
+  passwordConfirmation: PasswordSchema,
 })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: "Passwords don't match",
@@ -64,7 +65,7 @@ export async function action ({ request }: ActionArgs) {
   }
   const { username, password } = result.data;
 
-  const existingUser = await getUserByEmail(username);
+  const existingUser = await getUserByUsername(username);
   if (existingUser) {
     return badRequest({
       fields,

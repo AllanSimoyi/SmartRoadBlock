@@ -23,6 +23,7 @@ import { useCallback } from "react";
 import { CustomCatchBoundary } from "~/components/CustomCatchBoundary";
 import { CustomErrorBoundary } from "~/components/CustomErrorBoundary";
 import { getUserId } from "~/session.server";
+import { UsernameSchema } from "~/lib/auth.validations";
 
 export const meta: MetaFunction = () => {
   return {
@@ -43,8 +44,8 @@ export async function loader ({ request }: LoaderArgs) {
 }
 
 const Schema = z.object({
-  username: z.string().min(1).max(50),
-  password: z.string().min(1).max(50),
+  username: UsernameSchema,
+  password: z.string().min(1),
   redirectTo: z.string(),
 })
 
