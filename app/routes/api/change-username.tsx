@@ -1,20 +1,18 @@
 import type { ActionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { z } from "zod";
+import { prisma } from "~/db.server";
 import { UsernameSchema } from "~/lib/auth.validations";
-import { badRequest } from "~/lib/core.validations";
+import { badRequest, PositiveIntSchema } from "~/lib/core.validations";
 import { FALLBACK_ERROR_MESSAGE } from "~/lib/errors";
-import { verifyLogin } from "~/lib/user.server";
 
 const Schema = z.object({
+  userId: PositiveIntSchema,
   username: UsernameSchema,
-  password: z.string().min(1),
 });
 
 export async function action ({ request }: ActionArgs) {
   try {
-    const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "";
-
     const formData = await request.formData();
     const fields = Object.fromEntries(formData.entries());
 
@@ -23,14 +21,14 @@ export async function action ({ request }: ActionArgs) {
       const { formErrors, fieldErrors } = result.error.flatten();
       return badRequest({ fields, fieldErrors, formError: formErrors.join(", ") });
     }
-    const { username, password } = result.data;
+    const { userId, username } = result.data;
 
-    const user = await verifyLogin(username, password);
-    if (!user) {
-      return badRequest({ fields, formError: `Incorrect credentials` });
-    }
+    await prisma.user.update({
+      where: { id: userId },
+      data: { username },
+    });
 
-    return json({ user, CLOUD_NAME }, { status: 400 });
+    return json({}, { status: 400 });
   } catch ({ message }) {
     return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 400 });
   }

@@ -35,7 +35,7 @@ model Driver {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  vehicle Vehicle[]
+  vehicles Vehicle[]
 }
 
 model Vehicle {

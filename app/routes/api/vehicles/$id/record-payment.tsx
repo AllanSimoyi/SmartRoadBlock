@@ -34,9 +34,7 @@ export async function action ({ request, params }: ActionArgs) {
       }
     });
 
-    const payments = await prisma.payment.findMany();
-
-    return json({ payments }, { status: 400 });
+    return json({}, { status: 400 });
   } catch ({ message }) {
     return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 400 });
   }

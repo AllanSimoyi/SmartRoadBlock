@@ -18,6 +18,8 @@ const Schema = z.object({
 
 export async function action ({ request }: ActionArgs) {
   try {
+    const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "";
+
     const formData = await request.formData();
     const fields = Object.fromEntries(formData.entries());
   
@@ -39,7 +41,7 @@ export async function action ({ request }: ActionArgs) {
   
     const user = await createUser(username, password,);
   
-    return json({ user }, { status: 400 });
+    return json({ user, CLOUD_NAME }, { status: 400 });
   } catch ({message}) {
     return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 400 });
   }

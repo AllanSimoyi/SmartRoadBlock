@@ -5,9 +5,9 @@ import { PositiveIntSchema } from "~/lib/core.validations";
 import { FALLBACK_ERROR_MESSAGE } from "~/lib/errors";
 
 function fetchVehicle (id: number) {
-  return prisma.vehicle.findUnique({
+  return prisma.driver.findUnique({
     where: { id },
-    include: { driver: true, payments: true },
+    include: { vehicles: { include: { payments: true } } },
   });
 }
 

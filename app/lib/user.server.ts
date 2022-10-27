@@ -26,11 +26,27 @@ export async function deleteUserByEmail (username: User["username"]) {
   return prisma.user.delete({ where: { username } });
 }
 
+export async function verifyCredentials (userId: number, password: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (!user) {
+    return undefined;
+  }
+
+  const isValid = await bcrypt.compare(password, user.hashedPassword);
+  if (!isValid) {
+    return undefined;
+  }
+
+  const { hashedPassword, ...userWithoutPassword } = user;
+  return userWithoutPassword;
+}
+
 export async function verifyLogin (username: User["username"], password: string) {
   const user = await prisma.user.findUnique({
     where: { username },
   });
-
   if (!user) {
     return null;
   }
@@ -39,7 +55,6 @@ export async function verifyLogin (username: User["username"], password: string)
     password,
     user.hashedPassword
   );
-
   if (!isValid) {
     return null;
   }
