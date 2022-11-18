@@ -22,7 +22,7 @@ import { UploadImage } from '~/components/UploadImage';
 import { prisma } from "~/db.server";
 import { useUploadCloudinaryImage } from '~/hooks/useUploadCloudinaryImage';
 import type { inferSafeParseErrors} from "~/lib/core.validations";
-import { badRequest, DateSchema, PositiveDecimalSchema } from "~/lib/core.validations";
+import { badRequest, DateSchema, PositiveDecimalSchema, PositiveIntSchema } from "~/lib/core.validations";
 import { requireUser } from "~/session.server";
 
 export const meta: MetaFunction = () => {
@@ -44,8 +44,8 @@ const Schema = z.object({
 
   year: z.string().max(4),
   colour: z.string().max(10),
-  weight: PositiveDecimalSchema,
-  netWeight: PositiveDecimalSchema,
+  weight: PositiveIntSchema,
+  netWeight: PositiveIntSchema,
 
   fullName: z.string().min(1).max(255),
   licenseNumber: z.string().min(1).max(255),
