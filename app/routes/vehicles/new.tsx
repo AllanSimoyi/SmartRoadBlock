@@ -21,8 +21,8 @@ import { TextField } from "~/components/TextField";
 import { UploadImage } from '~/components/UploadImage';
 import { prisma } from "~/db.server";
 import { useUploadCloudinaryImage } from '~/hooks/useUploadCloudinaryImage';
-import type { inferSafeParseErrors } from "~/lib/core.validations";
-import { badRequest, PositiveDecimalSchema } from "~/lib/core.validations";
+import type { inferSafeParseErrors} from "~/lib/core.validations";
+import { badRequest, DateSchema, PositiveDecimalSchema } from "~/lib/core.validations";
 import { requireUser } from "~/session.server";
 
 export const meta: MetaFunction = () => {
@@ -42,9 +42,22 @@ const Schema = z.object({
   finesDue: PositiveDecimalSchema,
   vehicleImage: z.string().min(0).max(800),
 
+  year: z.string().max(4),
+  colour: z.string().max(10),
+  weight: PositiveDecimalSchema,
+  netWeight: PositiveDecimalSchema,
+
   fullName: z.string().min(1).max(255),
   licenseNumber: z.string().min(1).max(255),
   driverImage: z.string().min(0).max(800),
+
+  nationalID: z.string(),
+  dob: DateSchema,
+  phone: z.string(),
+  defensive: z.string(),
+  medical: z.string(),
+  driverClass: z.string(),
+  driverYear: z.string(),
 })
 
 type Fields = z.infer<typeof Schema>;
@@ -68,16 +81,34 @@ export async function action ({ request, params }: ActionArgs) {
   }
   const { plateNumber, makeAndModel, vehicleImage, finesDue } = result.data;
   const { fullName, licenseNumber, driverImage } = result.data;
+  const { year, colour, weight, netWeight } = result.data;
+  const { nationalID, dob, phone, defensive, medical, driverClass, driverYear } = result.data;
 
   const driver = await prisma.driver.create({
     data: {
-      fullName, licenseNumber, image: driverImage,
+      fullName,
+      licenseNumber,
+      image: driverImage,
+      nationalID,
+      dob,
+      phone,
+      defensive,
+      medical,
+      class: driverClass,
+      year: driverYear,
     }
   });
 
   await prisma.vehicle.create({
     data: {
-      plateNumber, makeAndModel, image: vehicleImage, finesDue,
+      plateNumber,
+      makeAndModel,
+      image: vehicleImage,
+      finesDue,
+      year,
+      colour,
+      weight,
+      netWeight,
       driverId: driver.id
     }
   });
@@ -96,9 +127,22 @@ export default function AddVehicle () {
     vehicleImage: "",
     finesDue: 0,
 
+    year: "",
+    colour: "",
+    weight: 0,
+    netWeight: 0,
+
     fullName: "",
     licenseNumber: "",
     driverImage: "",
+
+    nationalID: "",
+    dob: new Date(),
+    phone: "",
+    defensive: "",
+    medical: "",
+    driverClass: "",
+    driverYear: ""
   }
 
   const vehicleImage = useUploadCloudinaryImage({
@@ -161,6 +205,30 @@ export default function AddVehicle () {
                   label="Total Fines Due"
                   placeholder="Total Fines Due"
                 />
+                <TextField
+                  name="year"
+                  label="Year"
+                  placeholder="Year"
+                />
+                <TextField
+                  name="colour"
+                  label="Colour"
+                  placeholder="Colour"
+                />
+                <TextField
+                  type="number"
+                  step=".01"
+                  name="weight"
+                  label="Weight"
+                  placeholder="Weight"
+                />
+                <TextField
+                  type="number"
+                  step=".01"
+                  name="netWeight"
+                  label="Net Weight"
+                  placeholder="Net Weight"
+                />
                 <input type="hidden" name="vehicleImage" value={vehicleImage.publicId} />
                 <UploadImage {...vehicleImage} identifier={"vehicle's image"} />
               </CardSection>
@@ -179,6 +247,42 @@ export default function AddVehicle () {
                   name="licenseNumber"
                   label="License Number"
                   placeholder="License Number"
+                />
+                <TextField
+                  name="nationalID"
+                  label="National ID"
+                  placeholder="National ID"
+                />
+                <TextField
+                  name="dob"
+                  type="date"
+                  label="Date of Birth"
+                  placeholder="Date of Birth"
+                />
+                <TextField
+                  name="phone"
+                  label="Phone Number"
+                  placeholder="Phone Number"
+                />
+                <TextField
+                  name="defensive"
+                  label="Defensive"
+                  placeholder="Defensive"
+                />
+                <TextField
+                  name="medical"
+                  label="Medical"
+                  placeholder="Medical"
+                />
+                <TextField
+                  name="driverClass"
+                  label="Class"
+                  placeholder="Class"
+                />
+                <TextField
+                  name="driverYear"
+                  label="Year"
+                  placeholder="Year"
                 />
                 <input type="hidden" name="driverImage" value={driverImage.publicId} />
                 <UploadImage {...driverImage} identifier={"driver's image"} />

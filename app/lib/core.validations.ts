@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { json } from "@remix-run/node";
+import dayjs from "dayjs";
 
 export const CleanPositiveIntSchema = z.number().positive();
 
@@ -29,7 +30,9 @@ export const DateSchema = z.preprocess((arg) => {
   if (typeof arg == "string" || arg instanceof Date) {
     return new Date(arg);
   }
-}, z.date());
+}, z.date())
+.or(z.string())
+.refine(str => dayjs(str).isValid());
 
 export type inferSafeParseErrors<T extends z.ZodType<any, any, any>> = {
   [P in keyof z.infer<T>]?: string[];

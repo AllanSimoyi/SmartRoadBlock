@@ -6,6 +6,7 @@ import {
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Link, useCatch, useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
+import dayjs from 'dayjs';
 import * as React from "react";
 import { ChevronRight } from 'tabler-icons-react';
 import { z } from "zod";
@@ -21,8 +22,8 @@ import { TextField } from "~/components/TextField";
 import { UploadImage } from '~/components/UploadImage';
 import { prisma } from "~/db.server";
 import { useUploadCloudinaryImage } from '~/hooks/useUploadCloudinaryImage';
-import type { inferSafeParseErrors } from "~/lib/core.validations";
-import { badRequest, PositiveDecimalSchema, PositiveIntSchema } from "~/lib/core.validations";
+import type { inferSafeParseErrors} from "~/lib/core.validations";
+import { badRequest, DateSchema, PositiveDecimalSchema, PositiveIntSchema } from "~/lib/core.validations";
 import { requireUser } from "~/session.server";
 
 export const meta: MetaFunction = () => {
@@ -57,9 +58,22 @@ const Schema = z.object({
   finesDue: PositiveDecimalSchema,
   vehicleImage: z.string().min(0).max(800),
 
+  year: z.string().max(4),
+  colour: z.string().max(10),
+  weight: PositiveDecimalSchema,
+  netWeight: PositiveDecimalSchema,
+
   fullName: z.string().min(1).max(255),
   licenseNumber: z.string().min(1).max(255),
   driverImage: z.string().min(0).max(800),
+
+  nationalID: z.string(),
+  dob: DateSchema,
+  phone: z.string(),
+  defensive: z.string(),
+  medical: z.string(),
+  driverClass: z.string(),
+  driverYear: z.string(),
 })
 
 type Fields = z.infer<typeof Schema>;
@@ -89,6 +103,8 @@ export async function action ({ request, params }: ActionArgs) {
   }
   const { plateNumber, makeAndModel, vehicleImage, finesDue } = result.data;
   const { fullName, licenseNumber, driverImage } = result.data;
+  const { year, colour, weight, netWeight } = result.data;
+  const { nationalID, dob, phone, defensive, medical, driverClass, driverYear } = result.data;
 
   const vehicle = await prisma.vehicle.findUnique({
     where: { id: id },
@@ -101,15 +117,35 @@ export async function action ({ request, params }: ActionArgs) {
   await Promise.all([
     prisma.vehicle.update({
       where: { id },
-      data: { plateNumber, makeAndModel, image: vehicleImage, finesDue },
+      data: {
+        plateNumber,
+        makeAndModel,
+        image: vehicleImage,
+        year,
+        colour,
+        weight,
+        netWeight,
+        finesDue
+      },
     }),
     prisma.driver.update({
       where: { id: vehicle.driverId },
-      data: { fullName, licenseNumber, image: driverImage },
+      data: {
+        fullName,
+        licenseNumber,
+        image: driverImage,
+        nationalID,
+        dob,
+        phone,
+        defensive,
+        medical,
+        class: driverClass,
+        year: driverYear,
+      },
     })
   ]);
 
-  return redirect(`/vehicles/${ id }`);
+  return redirect(`/vehicles/${id}`);
 }
 
 export default function EditVehicle () {
@@ -123,9 +159,22 @@ export default function EditVehicle () {
     vehicleImage: vehicle.image,
     finesDue: Number(vehicle.finesDue),
 
+    year: vehicle.year || "",
+    colour: vehicle.colour || "",
+    weight: vehicle.weight || 0,
+    netWeight: vehicle.netWeight || 0,
+
     fullName: vehicle.driver.fullName,
     licenseNumber: vehicle.driver.licenseNumber,
     driverImage: vehicle.driver.image,
+
+    nationalID: vehicle.driver.nationalID || "",
+    dob: dayjs(vehicle.driver.dob).format("YYYY-MM-DD"),
+    phone: vehicle.driver.phone || "",
+    defensive: vehicle.driver.defensive || "",
+    medical: vehicle.driver.medical || "",
+    driverClass: vehicle.driver.class || "",
+    driverYear: vehicle.driver.year || ""
   }
 
   const vehicleImage = useUploadCloudinaryImage({
@@ -156,7 +205,7 @@ export default function EditVehicle () {
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem color="green.600">
-                      <BreadcrumbLink as={Link} to={`/vehicles/${ vehicle.id }`}>
+                      <BreadcrumbLink as={Link} to={`/vehicles/${vehicle.id}`}>
                         Owned By {vehicle.driver.fullName}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
@@ -193,6 +242,30 @@ export default function EditVehicle () {
                   label="Total Fines Due"
                   placeholder="Total Fines Due"
                 />
+                <TextField
+                  name="year"
+                  label="Year"
+                  placeholder="Year"
+                />
+                <TextField
+                  name="colour"
+                  label="Colour"
+                  placeholder="Colour"
+                />
+                <TextField
+                  type="number"
+                  step=".01"
+                  name="weight"
+                  label="Weight"
+                  placeholder="Weight"
+                />
+                <TextField
+                  type="number"
+                  step=".01"
+                  name="netWeight"
+                  label="Net Weight"
+                  placeholder="Net Weight"
+                />
                 <input type="hidden" name="vehicleImage" value={vehicleImage.publicId} />
                 <UploadImage {...vehicleImage} identifier={"vehicle's image"} />
               </CardSection>
@@ -211,6 +284,42 @@ export default function EditVehicle () {
                   name="licenseNumber"
                   label="License Number"
                   placeholder="License Number"
+                />
+                <TextField
+                  name="nationalID"
+                  label="National ID"
+                  placeholder="National ID"
+                />
+                <TextField
+                  name="dob"
+                  type="date"
+                  label="Date of Birth"
+                  placeholder="Date of Birth"
+                />
+                <TextField
+                  name="phone"
+                  label="Phone Number"
+                  placeholder="Phone Number"
+                />
+                <TextField
+                  name="defensive"
+                  label="Defensive"
+                  placeholder="Defensive"
+                />
+                <TextField
+                  name="medical"
+                  label="Medical"
+                  placeholder="Medical"
+                />
+                <TextField
+                  name="driverClass"
+                  label="Class"
+                  placeholder="Class"
+                />
+                <TextField
+                  name="driverYear"
+                  label="Year"
+                  placeholder="Year"
                 />
                 <input type="hidden" name="driverImage" value={driverImage.publicId} />
                 <UploadImage {...driverImage} identifier={"driver's image"} />
