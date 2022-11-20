@@ -34,17 +34,20 @@ export async function action ({ request }: ActionArgs) {
       const errorMessage = [strFieldErrors, strFormErrors]
         .filter(el => el)
         .join(", ");
-      return json({ errorMessage });
+      console.log("errorMessage: ", errorMessage);
+      return json({ errorMessage }, { status: 200 });
     }
     const { username, password } = result.data;
 
     const user = await verifyLogin(username, password);
     if (!user) {
-      return json({ errorMessage: "Incorrect credentials" });
+      console.log("Incorrect credentials");
+      return json({ errorMessage: "Incorrect credentials" }, { status: 200 });
     }
 
     return json({ user, CLOUD_NAME });
   } catch ({ message }) {
-    return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE });
+    console.log("Caught Error", message as string);
+    return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 200 });
   }
 }
