@@ -45,6 +45,6 @@ export async function action ({ request }: ActionArgs) {
 
     return json({ user, CLOUD_NAME });
   } catch ({ message }) {
-    return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 400 });
+    return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE });
   }
 }
