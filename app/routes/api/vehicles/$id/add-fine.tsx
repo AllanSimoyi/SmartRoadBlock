@@ -29,6 +29,7 @@ export async function action ({ request, params }: ActionArgs) {
     }
     const id = slugResult.data;
 
+    console.log("fields", fields);
     const result = await Schema.safeParseAsync(fields);
     if (!result.success) {
       const { formErrors, fieldErrors } = result.error.flatten();
