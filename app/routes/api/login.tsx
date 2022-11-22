@@ -23,8 +23,6 @@ export async function action ({ request }: ActionArgs) {
   try {
     const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "";
 
-    console.log("Body", request.body);
-
     const formData = await request.formData();
     const fields = Object.fromEntries(formData.entries());
 

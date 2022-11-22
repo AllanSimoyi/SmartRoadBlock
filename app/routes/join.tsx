@@ -28,6 +28,14 @@ export const meta: MetaFunction = () => {
   };
 };
 
+export async function loader ({ request }: LoaderArgs) {
+  const currentUserId = await getUserId(request);
+  if (currentUserId) {
+    return redirect("/");
+  }
+  return json({});
+}
+
 const Schema = z.object({
   username: UsernameSchema,
   password: PasswordSchema,
@@ -45,14 +53,6 @@ type ActionData = {
   fields?: Fields
   fieldErrors?: FieldErrors
 };
-
-export async function loader ({ request }: LoaderArgs) {
-  const currentUserId = await getUserId(request);
-  if (currentUserId) {
-    return redirect("/");
-  }
-  return json({});
-}
 
 export async function action ({ request }: ActionArgs) {
   const formData = await request.formData();

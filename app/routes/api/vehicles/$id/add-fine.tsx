@@ -36,8 +36,8 @@ export async function action ({ request, params }: ActionArgs) {
       },
     });
 
-    return json({}, { status: 400 });
+    return json({}, { status: 200 });
   } catch ({ message }) {
-    return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 400 });
+    return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 200 });
   }
 }
