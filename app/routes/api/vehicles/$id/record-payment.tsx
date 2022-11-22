@@ -9,6 +9,12 @@ const Schema = z.object({
   amount: PositiveDecimalSchema,
 });
 
+function fieldErrorsToString (fieldErrors: FieldErrors) {
+  const { amount } = fieldErrors;
+  const array = [amount?.join(", ") || ""];
+  return array.filter(el => el).join(", ");
+}
+
 export async function action ({ request, params }: ActionArgs) {
   try {
     const formData = await request.formData();
@@ -23,7 +29,13 @@ export async function action ({ request, params }: ActionArgs) {
     const result = await Schema.safeParseAsync(fields);
     if (!result.success) {
       const { formErrors, fieldErrors } = result.error.flatten();
-      return badRequest({ fields, fieldErrors, formError: formErrors.join(", ") });
+      const strFieldErrors = fieldErrorsToString(fieldErrors);
+      const strFormErrors = formErrors.join(", ") || "";
+      const errorMessage = [strFieldErrors, strFormErrors]
+        .filter(el => el)
+        .join(", ");
+      console.log("errorMessage: ", errorMessage);
+      return json({ errorMessage }, { status: 200 });
     }
     const { amount } = result.data;
 
@@ -34,8 +46,8 @@ export async function action ({ request, params }: ActionArgs) {
       }
     });
 
-    return json({}, { status: 400 });
+    return json({}, { status: 200 });
   } catch ({ message }) {
-    return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 400 });
+    return json({ errorMessage: message as string || FALLBACK_ERROR_MESSAGE }, { status: 200 });
   }
 }
